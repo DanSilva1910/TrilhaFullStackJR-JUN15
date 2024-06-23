@@ -45,5 +45,37 @@ module.exports = class UserController {
             console.error('Error during user registration:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
+    };
+
+
+    static async login(req, res){
+        const { email , password } = req.body;
+
+        if (!email) {
+            return res.status(422).json({ message: 'Email is required' });
+        };
+
+        if (!password) {
+            return res.status(422).json({ message: 'Passwords is required' });
+        };
+
+        const user = await User.findOne({ email: email });
+            if (!user) {
+            return res.status(422).json({ message: 'There is no user registered with this email' });
+        };
+
+        const ckeckPassword = await bcrypt.compare(password, user.password);
+
+        if (!ckeckPassword ){
+            return res.status(422).json({ message: 'Invalid password' });
+
+        };
+
+           // Resposta de sucesso após o registro do usuário
+        return res.status(201).json({ message: 'User logad successfully' });
+
+        //await createUserTokens(user, req, res);
+
+    
     }
 };
